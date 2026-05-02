@@ -1,7 +1,33 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import java from "react-syntax-highlighter/dist/esm/languages/prism/java";
+import bash from "react-syntax-highlighter/dist/esm/languages/prism/bash";
+import xml from "react-syntax-highlighter/dist/esm/languages/prism/markup";
+import yaml from "react-syntax-highlighter/dist/esm/languages/prism/yaml";
+import sql from "react-syntax-highlighter/dist/esm/languages/prism/sql";
+import properties from "react-syntax-highlighter/dist/esm/languages/prism/properties";
+import json from "react-syntax-highlighter/dist/esm/languages/prism/json";
+import groovy from "react-syntax-highlighter/dist/esm/languages/prism/groovy";
+import kotlin from "react-syntax-highlighter/dist/esm/languages/prism/kotlin";
+import docker from "react-syntax-highlighter/dist/esm/languages/prism/docker";
+
+SyntaxHighlighter.registerLanguage("java", java);
+SyntaxHighlighter.registerLanguage("bash", bash);
+SyntaxHighlighter.registerLanguage("shell", bash);
+SyntaxHighlighter.registerLanguage("sh", bash);
+SyntaxHighlighter.registerLanguage("xml", xml);
+SyntaxHighlighter.registerLanguage("html", xml);
+SyntaxHighlighter.registerLanguage("yaml", yaml);
+SyntaxHighlighter.registerLanguage("yml", yaml);
+SyntaxHighlighter.registerLanguage("sql", sql);
+SyntaxHighlighter.registerLanguage("properties", properties);
+SyntaxHighlighter.registerLanguage("json", json);
+SyntaxHighlighter.registerLanguage("groovy", groovy);
+SyntaxHighlighter.registerLanguage("kotlin", kotlin);
+SyntaxHighlighter.registerLanguage("docker", docker);
+SyntaxHighlighter.registerLanguage("dockerfile", docker);
 
 interface CodeBlockProps {
   code: string;
@@ -42,7 +68,7 @@ export function CodeBlock({ code, language = "java", title }: CodeBlockProps) {
         <SyntaxHighlighter
           language={language}
           style={vscDarkPlus}
-          customStyle={{ margin: 0, padding: 0, background: 'transparent' }}
+          customStyle={{ margin: 0, padding: 0, background: "transparent" }}
           wrapLines={true}
         >
           {code.trim()}

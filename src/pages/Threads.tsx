@@ -4,202 +4,114 @@ import { AlertBox } from "@/components/ui/AlertBox";
 
 export default function Threads() {
   return (
-    <PageContainer
-      title="Threads e Concorrência"
-      subtitle="Thread, Runnable, sincronização, ExecutorService, CompletableFuture e Virtual Threads (Java 21)."
-      difficulty="avancado"
-      timeToRead="18 min"
-    >
-      <p>
-        Concorrência permite executar múltiplas tarefas simultaneamente, melhorando desempenho em
-        operações paralelas como I/O, processamento de dados e servidores web. Java tem suporte
-        nativo a threads desde a versão 1.0.
-      </p>
-
-      <h2>1. Thread e Runnable</h2>
-      <CodeBlock
-        language="java"
-        code={`// Forma 1: estendendo Thread
-class MinhaThread extends Thread {
+    <PageContainer title="Threads & Runnable" subtitle="Concorrência básica — duas formas de criar uma thread, qual usar." difficulty="intermediario" timeToRead="20 min">
+        <h2>Por que você precisa disso</h2><p>
+          Imagine que seu programa precisa baixar 10 arquivos da internet. Sem threads, você baixa um, espera terminar, baixa o próximo, espera... e o usuário olha pra tela parada. Com threads, você dispara os 10 downloads ao mesmo tempo e o tempo total cai drasticamente.
+        </p><p>
+          Threads são unidades de execução dentro do mesmo processo. Elas compartilham memória (cuidado!) mas rodam de forma "paralela" — em CPUs com vários núcleos, de verdade; em um núcleo só, alternando rapidinho (concorrência).
+        </p><AlertBox type="tip" title="Concorrência ≠ Paralelismo">
+          Concorrência é lidar com várias coisas ao mesmo tempo (alternar). Paralelismo é executar várias coisas ao mesmo tempo (vários núcleos). Java te dá ambos.
+        </AlertBox><h2>Forma 1: herdando da classe Thread (não recomendada)</h2><p>
+          Funciona, mas você gasta sua única herança em algo que não é parte do domínio do seu programa. Mostro só pra você reconhecer no código de outros:
+        </p><CodeBlock title="MinhaThread.java — herdando Thread" code={`public class MinhaThread extends Thread {
     @Override
     public void run() {
-        for (int i = 0; i < 5; i++) {
-            System.out.println("Thread " + getName() + ": " + i);
-            try { Thread.sleep(100); } catch (InterruptedException e) { break; }
-        }
-    }
-}
-
-MinhaThread t = new MinhaThread();
-t.setName("T1");
-t.start(); // inicia a thread — NUNCA chame run() diretamente!
-
-// Forma 2: implementando Runnable (preferida — não herda de Thread)
-Runnable tarefa = () -> {
-    System.out.println("Executando no thread: " + Thread.currentThread().getName());
-};
-
-Thread thread = new Thread(tarefa, "MinhaTarefa");
-thread.start();
-thread.join(); // espera a thread terminar
-
-// Informações sobre a thread
-System.out.println(thread.getName());     // nome
-System.out.println(thread.isAlive());     // se ainda está rodando
-System.out.println(thread.getState());   // NEW, RUNNABLE, BLOCKED, WAITING, TERMINATED`}
-      />
-
-      <h2>2. Sincronização</h2>
-      <CodeBlock
-        language="java"
-        code={`// Problema: race condition
-class ContadorInseguro {
-    private int valor = 0;
-    void incrementar() { valor++; } // NÃO é atômico!
-    int getValor() { return valor; }
-}
-
-// Solução 1: synchronized
-class ContadorSeguro {
-    private int valor = 0;
-
-    public synchronized void incrementar() { // apenas uma thread por vez
-        valor++;
+        System.out.println("Rodando em: " + Thread.currentThread().getName());
     }
 
-    public synchronized int getValor() { return valor; }
-}
-
-// Solução 2: AtomicInteger (sem overhead de synchronized)
-import java.util.concurrent.atomic.*;
-
-AtomicInteger contador = new AtomicInteger(0);
-contador.incrementAndGet(); // atômico
-contador.getAndAdd(5);      // atômico
-contador.compareAndSet(5, 10); // CAS — compare and swap
-
-// Solução 3: synchronized block (granularidade fina)
-class Carrinho {
-    private List<String> itens = new ArrayList<>();
-    private final Object lock = new Object();
-
-    public void adicionar(String item) {
-        synchronized (lock) {
-            itens.add(item);
-        }
+    public static void main(String[] args) {
+        MinhaThread t = new MinhaThread();
+        t.start();
     }
-}`}
-      />
+}`} /><h2>Forma 2: implementando Runnable (preferida)</h2><p>
+          Runnable é uma interface funcional com um único método <code>run()</code>. Você passa o que quer executar pra um <code>Thread</code>, sem amarrar sua classe a nada. Hoje em dia, com lambdas, fica curtinho:
+        </p><CodeBlock title="HelloThread.java" code={`public class HelloThread {
+    public static void main(String[] args) throws InterruptedException {
+        Runnable tarefa = () -> {
+            System.out.println("Oi de " + Thread.currentThread().getName());
+        };
 
-      <h2>3. ExecutorService</h2>
-      <CodeBlock
-        language="java"
-        code={`import java.util.concurrent.*;
+        Thread t = new Thread(tarefa, "minha-thread");
+        t.start();   // dispara em PARALELO
+        t.join();    // espera ela terminar
 
-// Pool de threads — gerencia threads automaticamente
-ExecutorService executor = Executors.newFixedThreadPool(4); // 4 threads
-
-// Submetendo tarefas
-executor.submit(() -> System.out.println("Tarefa 1"));
-executor.submit(() -> System.out.println("Tarefa 2"));
-
-// Future — resultado de tarefa assíncrona
-Future<Integer> futuro = executor.submit(() -> {
-    Thread.sleep(1000);
-    return 42;
-});
-
-// Outros pools
-ExecutorService cached  = Executors.newCachedThreadPool();   // cresce/encolhe
-ExecutorService single  = Executors.newSingleThreadExecutor(); // 1 thread
-ScheduledExecutorService scheduled = Executors.newScheduledThreadPool(2);
-
-// Agendar execução
-scheduled.schedule(() -> System.out.println("Após 2s"), 2, TimeUnit.SECONDS);
-scheduled.scheduleAtFixedRate(() -> System.out.println("A cada 1s"), 0, 1, TimeUnit.SECONDS);
-
-// SEMPRE feche o executor
-executor.shutdown();
-executor.awaitTermination(10, TimeUnit.SECONDS);
-
-// Esperando resultado
-try {
-    Integer resultado = futuro.get(5, TimeUnit.SECONDS); // timeout
-    System.out.println("Resultado: " + resultado); // 42
-} catch (TimeoutException e) {
-    futuro.cancel(true); // cancela se demorar mais que 5s
-}`}
-      />
-
-      <h2>4. CompletableFuture (Java 8+)</h2>
-      <CodeBlock
-        language="java"
-        code={`import java.util.concurrent.CompletableFuture;
-
-// Assíncrono sem bloquear a thread atual
-CompletableFuture<String> futuro = CompletableFuture.supplyAsync(() -> {
-    // simulando busca lenta em BD
+        System.out.println("Main acabou.");
+    }
+}`} /><AlertBox type="danger" title="start() vs run() — o erro clássico">
+          Chamar <code>t.run()</code> NÃO cria thread nenhuma. Executa o método na thread atual, igualzinho a uma chamada normal. Sempre <code>start()</code> pra rodar em paralelo.
+        </AlertBox><h2>Esperando uma thread terminar com join()</h2><p>
+          <code>join()</code> bloqueia a thread atual até a thread alvo terminar. Útil quando você precisa do resultado antes de continuar:
+        </p><CodeBlock code={`Thread t = new Thread(() -> {
     try { Thread.sleep(1000); } catch (InterruptedException e) {}
-    return "Dados do banco";
+    System.out.println("Filha terminou");
 });
-
-// Encadear operações assíncronas
-futuro
-    .thenApply(dados -> dados.toUpperCase())   // transforma o resultado
-    .thenAccept(System.out::println)           // consome (void)
-    .exceptionally(e -> {                      // trata erros
-        System.out.println("Erro: " + e.getMessage());
-        return null;
-    });
-
-// Combinar múltiplos futuros
-CompletableFuture<String> api1 = CompletableFuture.supplyAsync(() -> "Dados API 1");
-CompletableFuture<String> api2 = CompletableFuture.supplyAsync(() -> "Dados API 2");
-
-// Esperar todos
-CompletableFuture.allOf(api1, api2).thenRun(() -> {
-    System.out.println("Ambas as APIs responderam!");
+t.start();
+t.join(); // main fica parado 1 segundo aqui
+System.out.println("Main continua");`} /><h2>sleep() vs wait()</h2><ul>
+          <li>
+            <code>Thread.sleep(ms)</code>: pausa a thread atual por X milissegundos. NÃO solta locks. Use pra dar uma respirada ou simular delay.
+          </li><li>
+            <code>obj.wait()</code>: usado dentro de <code>synchronized(obj)</code>, solta o lock e fica esperando alguém chamar <code>obj.notify()</code>. Coisa antiga e perigosa — hoje prefira <code>BlockingQueue</code>, <code>CompletableFuture</code> ou virtual threads.
+          </li>
+        </ul><h2>Os 6 estados de uma Thread</h2><p>
+          O enum <code>Thread.State</code> define todos:
+        </p><ul>
+          <li>
+            <strong>NEW</strong>: criada com <code>new Thread(...)</code>, ainda não começou.
+          </li><li>
+            <strong>RUNNABLE</strong>: rodando OU pronta esperando o escalonador.
+          </li><li>
+            <strong>BLOCKED</strong>: esperando entrar num bloco <code>synchronized</code>.
+          </li><li>
+            <strong>WAITING</strong>: esperando indefinidamente (após <code>wait()</code> ou <code>join()</code>).
+          </li><li>
+            <strong>TIMED_WAITING</strong>: esperando com timeout (após <code>sleep(ms)</code> ou <code>join(ms)</code>).
+          </li><li>
+            <strong>TERMINATED</strong>: <code>run()</code> retornou, fim.
+          </li>
+        </ul><CodeBlock code={`Thread t = new Thread(() -> {
+    try { Thread.sleep(500); } catch (InterruptedException e) {}
 });
-
-// Usar o resultado de ambos
-api1.thenCombine(api2, (r1, r2) -> r1 + " | " + r2)
-    .thenAccept(System.out::println);`}
-      />
-
-      <h2>5. Virtual Threads (Java 21)</h2>
-      <CodeBlock
-        language="java"
-        code={`// Virtual Threads: threads leves gerenciadas pela JVM (não pelo OS)
-// Permite criar MILHÕES de threads sem overhead de threads de plataforma
-
-// Criar virtual thread diretamente
-Thread vt = Thread.ofVirtual()
-    .name("minha-vt")
-    .start(() -> System.out.println("Virtual Thread!"));
-
-// Via executor (recomendado para servidores)
-try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-    // Uma virtual thread por tarefa — escalável!
-    for (int i = 0; i < 10_000; i++) {
-        int id = i;
-        executor.submit(() -> System.out.println("VT " + id));
+System.out.println(t.getState()); // NEW
+t.start();
+System.out.println(t.getState()); // RUNNABLE
+Thread.sleep(100);
+System.out.println(t.getState()); // TIMED_WAITING
+t.join();
+System.out.println(t.getState()); // TERMINATED`} /><h2>Daemon threads</h2><p>
+          Thread daemon é "thread de fundo": a JVM encerra quando só sobram daemons. Útil pra coisas tipo coletor de lixo, monitor periódico. Setar ANTES do <code>start()</code>:
+        </p><CodeBlock code={`Thread t = new Thread(() -> {
+    while (true) {
+        System.out.println("tic");
+        try { Thread.sleep(500); } catch (InterruptedException e) { return; }
     }
-}
-
-// Virtual threads são ideais para I/O-bound workloads
-// (HTTP requests, BD queries, file I/O)
-// Para CPU-bound: use threads de plataforma tradicionais`}
-      />
-
-      <AlertBox type="warning" title="Cuidados com Concorrência">
-        <ul className="mb-0">
-          <li>• Prefira <strong>imutabilidade</strong> — objetos imutáveis são thread-safe por natureza</li>
-          <li>• Use <strong>AtomicXxx</strong> para contadores simples em vez de synchronized</li>
-          <li>• Prefira <strong>ConcurrentHashMap</strong> a HashMap em contexto multi-threaded</li>
-          <li>• Nunca chame <code>Thread.sleep()</code> dentro de um synchronized block</li>
-          <li>• Use <strong>CompletableFuture</strong> em vez de Future.get() sempre que possível</li>
-        </ul>
-      </AlertBox>
-    </PageContainer>
+});
+t.setDaemon(true);
+t.start();
+Thread.sleep(2000); // main acaba e leva o daemon junto`} /><h2>Identificando a thread atual</h2><p>
+          <code>Thread.currentThread()</code> retorna quem está executando agora. Útil pra debug e logs:
+        </p><CodeBlock code={`System.out.println("Eu sou: " + Thread.currentThread().getName());
+// Em Java 19+, threadId() retorna long único
+System.out.println("ID: " + Thread.currentThread().threadId());`} /><AlertBox type="warning" title="Por que NÃO usar stop(), suspend(), resume()">
+          Esses métodos foram <strong>deprecated faz mais de 20 anos</strong> e removidos em Java 21+. Eles matam a thread no meio do caminho, deixando locks travados e dados corrompidos. O caminho moderno: cooperação por flag <code>volatile boolean</code>ou via <code>Thread.interrupt()</code> + checagem de <code>isInterrupted()</code>.
+        </AlertBox><CodeBlock title="Parando uma thread do jeito certo" code={`Thread t = new Thread(() -> {
+    while (!Thread.currentThread().isInterrupted()) {
+        // trabalho...
+    }
+    System.out.println("Saí limpo!");
+});
+t.start();
+Thread.sleep(1000);
+t.interrupt(); // pede pra parar
+t.join();`} /><h2>🎯 Mãos à massa</h2><ol>
+          <li>
+            Crie 5 threads que imprimem o próprio nome 3 vezes cada, com um <code>sleep(100)</code>entre prints. Use <code>join()</code> no main pra esperar todas terminarem antes de imprimir "fim".
+          </li><li>
+            Faça uma thread daemon que imprime a hora atual a cada segundo. No main, durma 5 segundos e termine. Confirme que a JVM encerra junto.
+          </li><li>
+            Crie uma thread que fica num loop infinito incrementando um contador. No main, após 1 segundo, chame <code>interrupt()</code> e imprima o valor final do contador. (Dica: deixe a variável como <code>volatile</code> ou use <code>AtomicLong</code>.)
+          </li>
+        </ol>
+      </PageContainer>
   );
 }

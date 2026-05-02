@@ -1,116 +1,127 @@
 import { Link } from "wouter";
-import { motion } from "framer-motion";
 import {
-  Code2, Layers, GitBranch, Cpu, FlaskConical,
-  Wrench, Package, FunctionSquare, List, Shield
+  Coffee, Terminal, Code2, Layers, Cpu, Network,
+  Wrench, FileText, Sparkles, ArrowRight, BookOpen,
 } from "lucide-react";
 
-const modules = [
-  { path: "/primeiros-passos", icon: Code2, label: "Primeiros Passos", desc: "Hello World, compilação e execução", color: "text-primary" },
-  { path: "/tipos-variaveis", icon: Code2, label: "Tipos e Variáveis", desc: "int, double, String, boolean e mais", color: "text-blue-400" },
-  { path: "/controle-fluxo", icon: GitBranch, label: "Controle de Fluxo", desc: "if/else, switch, ternário", color: "text-purple-400" },
-  { path: "/lacos", icon: FunctionSquare, label: "Laços de Repetição", desc: "for, while, do-while, for-each", color: "text-green-400" },
-  { path: "/oop", icon: Layers, label: "Orientação a Objetos", desc: "Classes, objetos, encapsulamento", color: "text-yellow-400" },
-  { path: "/heranca", icon: GitBranch, label: "Herança e Polimorfismo", desc: "extends, override, upcasting", color: "text-orange-400" },
-  { path: "/interfaces", icon: Shield, label: "Interfaces e Abstratas", desc: "interface, abstract, default methods", color: "text-red-400" },
-  { path: "/colecoes", icon: List, label: "Collections", desc: "ArrayList, LinkedList, HashSet", color: "text-cyan-400" },
-  { path: "/lambda-streams", icon: Cpu, label: "Lambda e Streams", desc: "API funcional do Java 8+", color: "text-pink-400" },
-  { path: "/threads", icon: Cpu, label: "Threads e Concorrência", desc: "Thread, Runnable, CompletableFuture", color: "text-indigo-400" },
-  { path: "/testes", icon: FlaskConical, label: "Testes com JUnit", desc: "JUnit 5, @Test, assertions, Mockito", color: "text-emerald-400" },
-  { path: "/build-tools", icon: Wrench, label: "Maven e Gradle", desc: "Build tools, pom.xml, build.gradle", color: "text-amber-400" },
+const STATS = [
+  { v: "111", l: "Capítulos completos" },
+  { v: "600+", l: "Exemplos de código" },
+  { v: "100%", l: "Português BR" },
+  { v: "Java 21", l: "LTS atual" },
+];
+
+const TRACKS = [
+  { icon: Wrench, title: "Setup", desc: "Instalar OpenJDK, configurar PATH, escolher uma IDE.", to: "/instalar-jdk" },
+  { icon: Code2, title: "Sintaxe", desc: "Tipos, variáveis, controle de fluxo, métodos.", to: "/tipos-primitivos" },
+  { icon: Layers, title: "OOP", desc: "Classes, herança, interfaces, records, sealed.", to: "/classes" },
+  { icon: Sparkles, title: "Funcional", desc: "Lambdas, Streams, Optional, method refs.", to: "/lambdas" },
+  { icon: Network, title: "Concorrência", desc: "Threads, Executors, sincronização, Virtual Threads.", to: "/threads" },
+  { icon: Terminal, title: "Build & Test", desc: "Maven, Gradle, JUnit 5, Mockito.", to: "/maven" },
+  { icon: Coffee, title: "Spring Boot", desc: "REST, JPA, Security, Beans, testes.", to: "/spring-boot" },
+  { icon: Cpu, title: "Performance", desc: "GC, JVM tuning, profiling, JIT, benchmarks.", to: "/garbage-collection" },
+  { icon: FileText, title: "Projetos", desc: "To-Do CLI, API REST, chat com threads e mais.", to: "/projeto-todo" },
 ];
 
 export default function Home() {
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="text-center mb-16">
-          <div className="text-7xl mb-6">☕</div>
-          <h1 className="text-5xl sm:text-6xl font-extrabold text-foreground mb-4">
-            Java
-          </h1>
-          <p className="text-2xl font-semibold text-primary mb-4">Guia Completo em Português</p>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Aprenda Java do zero ao avançado com exemplos práticos, explicações claras e
-            todo o conteúdo em português. Do Hello World às Streams e Concorrência.
-          </p>
+    <div className="px-4 sm:px-8 lg:px-16 py-10 max-w-6xl mx-auto">
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ED8B00]/10 border border-[#ED8B00]/30 text-xs font-mono text-[#ED8B00] mb-6">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#ED8B00] animate-pulse" />
+          GUIA COMPLETO 2025 · PORTUGUÊS BR · OPEN SOURCE
+        </div>
+        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold text-white mb-6 leading-tight">
+          Domine o <span className="text-[#ED8B00]">Java</span>
+        </h1>
+        <p className="text-lg sm:text-xl text-[#D3D7CF] max-w-3xl mx-auto leading-relaxed mb-10">
+          Da primeira linha de{" "}
+          <code className="bg-[#1A1A1A] px-2 py-0.5 rounded text-[#FFC56B] font-mono text-base">
+            System.out.println
+          </code>{" "}
+          até aplicações concorrentes com Virtual Threads. Cada conceito explicado, cada código executado — sem mágica, sem encurtamentos.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href="/instalar-jdk"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#ED8B00] hover:bg-[#FFA830] text-black font-bold rounded-lg transition-all shadow-lg shadow-[#ED8B00]/30 hover:scale-105"
+          >
+            <Wrench className="w-5 h-5" />
+            Instalar o JDK
+          </Link>
+          <Link
+            href="/hello-world"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#1A1A1A] hover:bg-[#222] text-white font-medium rounded-lg border border-[#1F1F1F]/40 hover:border-[#ED8B00]/50 transition-all"
+          >
+            <Terminal className="w-5 h-5" />
+            Pular para Hello World
+          </Link>
+        </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/primeiros-passos"
-              className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
-            >
-              Começar agora →
+        <div className="mt-12 max-w-3xl mx-auto">
+          <div className="rounded-xl overflow-hidden border border-[#1F1F1F]/60 bg-[#0A0A0A] shadow-2xl text-left">
+            <div className="flex items-center gap-2 px-4 py-2 bg-[#151515] border-b border-[#1F1F1F]/60">
+              <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+              <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+              <span className="w-3 h-3 rounded-full bg-[#28C840]" />
+              <span className="ml-3 text-xs font-mono text-[#888A85]">Hello.java</span>
+            </div>
+            <pre className="p-5 text-sm font-mono text-[#D3D7CF] overflow-x-auto leading-relaxed">
+{`public class Hello {
+    public static void main(String[] args) {
+        var nome = "mundo";
+        System.out.println("Olá, " + nome + "!");
+
+        // Java 21: Virtual Threads em uma linha
+        Thread.startVirtualThread(() -> {
+            System.out.println("rodando em thread virtual!");
+        });
+    }
+}`}
+            </pre>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+        {STATS.map((s, i) => (
+          <div key={i} className="text-center">
+            <div className="text-4xl sm:text-5xl font-display font-bold text-white">{s.v}</div>
+            <div className="text-xs font-mono text-[#888A85] mt-2 uppercase tracking-wider">{s.l}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mb-12 text-center">
+        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#5382A1]/40 text-[#5382A1] text-xs font-mono uppercase tracking-wider">
+          <BookOpen className="w-3.5 h-3.5" /> Trilha estruturada
+        </span>
+        <h2 className="text-3xl sm:text-4xl font-display font-bold text-white mt-4">
+          Do <span className="text-[#ED8B00]">Hello, World</span> até Virtual Threads
+        </h2>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {TRACKS.map((t, i) => {
+          const Icon = t.icon;
+          return (
+            <Link key={i} href={t.to} className="block group">
+              <div className="p-6 rounded-xl bg-[#0A0A0A] border border-[#1F1F1F]/60 hover:border-[#ED8B00]/50 hover:bg-[#111] transition-all h-full">
+                <Icon className="w-7 h-7 text-[#ED8B00] mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="font-display font-bold text-white text-lg mb-1.5">{t.title}</h3>
+                <p className="text-sm text-[#888A85] leading-relaxed mb-3">{t.desc}</p>
+                <span className="inline-flex items-center gap-1 text-xs font-mono text-[#ED8B00]/80 group-hover:text-[#ED8B00]">
+                  abrir <ArrowRight className="w-3 h-3" />
+                </span>
+              </div>
             </Link>
-            <Link
-              href="/instalacao"
-              className="px-6 py-3 bg-card border border-border rounded-xl font-semibold text-foreground hover:bg-muted transition-colors"
-            >
-              Instalação do JDK
-            </Link>
-          </div>
-        </div>
+          );
+        })}
+      </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
-          {modules.map((m, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * i, duration: 0.4 }}
-            >
-              <Link href={m.path} className="block group">
-                <div className="p-5 rounded-xl bg-card border border-border hover:border-primary/40 hover:bg-primary/5 transition-all duration-200">
-                  <m.icon className={`w-6 h-6 mb-3 ${m.color} group-hover:scale-110 transition-transform`} />
-                  <h3 className="font-semibold text-foreground mb-1 text-sm mt-0">{m.label}</h3>
-                  <p className="text-xs text-muted-foreground">{m.desc}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-          <div className="p-6 rounded-xl bg-primary/10 border border-primary/20 text-center">
-            <div className="text-3xl font-bold text-primary mb-1">23</div>
-            <div className="text-sm text-muted-foreground">Módulos</div>
-          </div>
-          <div className="p-6 rounded-xl bg-secondary/10 border border-secondary/20 text-center">
-            <div className="text-3xl font-bold text-secondary mb-1">100%</div>
-            <div className="text-sm text-muted-foreground">Em Português</div>
-          </div>
-          <div className="p-6 rounded-xl bg-muted border border-border text-center">
-            <div className="text-3xl font-bold text-foreground mb-1">Java 21</div>
-            <div className="text-sm text-muted-foreground">LTS Coberto</div>
-          </div>
-        </div>
-
-        <div className="p-6 rounded-xl bg-card border border-border">
-          <h3 className="text-lg font-bold text-foreground mb-3 mt-0">O que você vai aprender</h3>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-muted-foreground list-none ml-0">
-            {[
-              "Instalação do JDK e configuração do ambiente",
-              "Sintaxe fundamental: tipos, variáveis, operadores",
-              "Orientação a objetos: classes, herança, interfaces",
-              "Collections Framework: List, Set, Map, Queue",
-              "Java moderno: Lambda, Streams, Optional",
-              "Concorrência: Thread, ExecutorService, CompletableFuture",
-              "I/O: leitura e escrita de arquivos",
-              "Testes unitários com JUnit 5 e Mockito",
-              "Build tools: Maven e Gradle",
-              "Tratamento de exceções checked e unchecked",
-            ].map((item, i) => (
-              <li key={i} className="flex items-center gap-2 mb-0">
-                <span className="text-primary">✓</span> {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </motion.div>
+      <div className="mt-20 text-center text-xs font-mono text-[#888A85] opacity-70">
+        $ <span className="text-[#FFC56B]">java</span> --version &nbsp;·&nbsp; openjdk 21 LTS &nbsp;·&nbsp; livro 100% open source
+      </div>
     </div>
   );
 }
