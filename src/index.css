@@ -104,3 +104,81 @@
 .glass-panel {
   @apply bg-card/80 backdrop-blur-xl border border-white/5 shadow-xl;
 }
+
+/* Scrollbar Orange Theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f97316 0%, #dc2626 100%);
+  border-radius: 5px;
+  border: 2px solid hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ea580c 0%, #b91c1c 100%);
+}
+
+/* Prose Typography */
+.prose h2 {
+  @apply text-2xl font-bold mt-10 mb-4 text-foreground border-b border-border/50 pb-2;
+}
+
+.prose h3 {
+  @apply text-xl font-semibold mt-8 mb-3 text-foreground;
+}
+
+.prose p {
+  @apply my-4 leading-relaxed;
+}
+
+.prose ol, .prose ul {
+  @apply my-6 space-y-3;
+}
+
+.prose li {
+  @apply leading-relaxed;
+}
+
+.prose ol > li {
+  @apply list-decimal ml-6 pl-2;
+}
+
+.prose ul > li {
+  @apply list-disc ml-6 pl-2;
+}
+
+.prose ol > li::marker {
+  @apply text-orange-500 font-semibold;
+}
+
+.prose ul > li::marker {
+  @apply text-orange-500;
+}
+
+.prose code {
+  @apply px-2 py-1 rounded bg-muted text-orange-500 font-mono text-sm font-medium;
+}
+
+.prose pre {
+  @apply my-6;
+}
+
+.prose a {
+  @apply text-orange-500 hover:text-orange-400 underline underline-offset-2 transition-colors;
+}
+
+.prose strong {
+  @apply text-foreground font-semibold;
+}
+
+.prose hr {
+  @apply my-8 border-border;
+}

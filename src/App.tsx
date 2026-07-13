@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { LessonNav } from "@/components/ui/LessonNav";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
@@ -144,10 +146,11 @@ function Layout({ children }: { children: React.ReactNode }) {
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       <div className="flex-1 lg:pl-72 flex flex-col min-w-0 transition-all duration-300">
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
-        <main className="flex-1">
+        <main className="flex-1 pb-16 min-h-screen">
           {children}
         </main>
       </div>
+      <LessonNav />
     </div>
   );
 }
@@ -155,8 +158,9 @@ function Layout({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Layout>
-      <Suspense fallback={<PageLoader />}>
-        <Switch>
+      <ErrorBoundary>
+        <Suspense fallback={<PageLoader />}>
+          <Switch>
           <Route path="/" component={Home} />
         <Route path="/historia" component={Historia} />
         <Route path="/filosofia" component={Filosofia} />
@@ -269,8 +273,9 @@ function Router() {
         <Route path="/desafios" component={ProjetoExtraDesafios} />
         <Route path="/referencias" component={Referencias} />
           <Route component={NotFound} />
-        </Switch>
-      </Suspense>
+          </Switch>
+        </Suspense>
+      </ErrorBoundary>
     </Layout>
   );
 }
